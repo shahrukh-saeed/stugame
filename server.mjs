@@ -1,6 +1,17 @@
 import http from 'node:http';
 const port = Number(process.env.API_PORT || 3001);
 const difficulties = ['Foundations: recognize and understand core definitions', 'Connections: compare concepts and explain relationships', 'Application: apply concepts to a new scenario', 'Mastery: analyze multi-step problems and subtle distinctions'];
+// Normalize presentation only. Preserve case, numbers, operators, and wording.
+export function normalizeSource(text) {
+ return text.normalize('NFC')
+  .replace(/[\u2018\u2019]/g, "'")
+  .replace(/[\u201c\u201d]/g, '"')
+  .replace(/\s+/gu, ' ').trim();
+}
+export function sourceMatches(material, quote) {
+ const normalizedQuote = normalizeSource(quote);
+ return normalizedQuote.length > 0 && normalizeSource(material).includes(normalizedQuote);
+}
 export function validateQuiz(value) {
  if (!Array.isArray(value?.questions) || value.questions.length !== 5) throw new Error('Provider must return exactly five questions.');
  for (const q of value.questions) {
@@ -27,7 +38,7 @@ export const server = http.createServer(async (req, res) => {
   if (typeof content!=='string') throw new Error('Provider returned no text.');
   content=content.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'');
   const quiz=validateQuiz(JSON.parse(content));
-  if (quiz.questions.some(q=>!data.text.includes(q.source))) throw new Error('Provider returned a source quote that could not be verified. Try generating again.');
+  if (quiz.questions.some(q=>!sourceMatches(data.text,q.source))) throw new Error('Provider returned a source quote whose wording could not be found in your material, even after normalizing spacing and quotation marks. Try generating again.');
   send(200,quiz);
  } catch (err) { send(502,{error:err.name==='TimeoutError'?'AI provider timed out. Please retry.':err instanceof SyntaxError?'Provider returned invalid JSON. Please retry.':err.message || 'Question generation failed.'}); }
 });
