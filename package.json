@@ -1,0 +1,20 @@
+{
+  "name": "stugame",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "api": "node --env-file-if-exists=.env server.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "vite": "^7.2.2",
+    "pdfjs-dist": "^5.4.394",
+    "mammoth": "^1.11.0",
+    "jszip": "^3.10.1",
+    "lucide": "^0.468.0"
+  }
+}
