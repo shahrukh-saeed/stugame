@@ -1,46 +1,47 @@
 export const CHAPTERS = [
   {
-    title: "The broken crossing",
-    action: "Weave a bridge",
+    title: "Ravine crossing",
+    action: "Secure the rope bridge",
     story:
-      "The path has fallen into the mist. Recall what you know to weave a crossing.",
-    reward: "A bridge rises from the ravine. Your journey can continue.",
+      "A washed-out bridge cuts off the trail. Use your field knowledge to secure a safe crossing.",
+    reward: "Ropes secured. The crossing is safe. Keep moving.",
     z: -6,
     color: 0x8ee5cc,
   },
   {
-    title: "The sealed archive",
-    action: "Unseal the archive",
+    title: "The ranger outpost",
+    action: "Open the trail gate",
     story:
-      "An ancient inscription seals the mountain pass. Your knowledge is the key.",
-    reward: "The archive opens. You have learned the light spell.",
+      "A locked ranger gate protects the mountain pass. Work out the access code from your course material.",
+    reward: "Gate unlocked. You have reached the high-country trail.",
     z: -25,
     color: 0xd7bcff,
   },
   {
-    title: "The hollow sentinel",
-    action: "Cast a light spell",
+    title: "Rockfall ahead",
+    action: "Clear the rockfall",
     story:
-      "A sentinel blocks the valley. Break its shield with a spell powered by understanding.",
-    reward: "Your spell shatters the shield. The sentinel returns to stone.",
+      "Loose boulders block the route. Choose a safe plan to clear the trail.",
+    reward: "The rockfall is cleared. Watch your footing on the way through.",
     z: -44,
     color: 0xffb987,
   },
   {
-    title: "The sleeping forest",
-    action: "Awaken the forest",
+    title: "The steep ascent",
+    action: "Rig the climbing route",
     story:
-      "The forest has forgotten how to grow. Give it a spark of understanding.",
-    reward: "Roots unfurl into a staircase. The summit is within reach.",
+      "The ridge is too steep to cross without a secured route. Put your knowledge to work.",
+    reward: "Climbing route secured. The summit is within reach.",
     z: -63,
     color: 0xb8ef8a,
   },
   {
-    title: "The heart of the mountain",
-    action: "Ignite the beacon",
+    title: "Summit signal",
+    action: "Light the rescue signal",
     story:
-      "One final spark will bring the valley back to life. Light the beacon and return home.",
-    reward: "The beacon is lit. Follow the golden trail into the portal.",
+      "Clouds are closing in. Set up your signal fire, then follow the trail back to base camp.",
+    reward:
+      "Signal fire lit. Follow the trail to the expedition tent at base camp.",
     z: -82,
     color: 0xffdc8a,
   },
@@ -51,7 +52,7 @@ export function createQuest() {
 export function currentChapter(state) {
   return CHAPTERS[state.done.length] || null;
 }
-export function canCast(state) {
+export function canAct(state) {
   const c = currentChapter(state);
   return !!c && state.z <= c.z + 9;
 }
@@ -83,7 +84,7 @@ export function questXP(state) {
     state.gems.length * 5
   );
 }
-export function reachedPortal(state) {
+export function reachedCamp(state) {
   return (
     state.done.length === CHAPTERS.length &&
     state.z < -95 &&

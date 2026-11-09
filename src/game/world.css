@@ -255,3 +255,152 @@
     height: 42px;
   }
 }
+/* Expedition equipment and immersive presentation. */
+.expedition-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.expedition-tools > span {
+  margin-right: auto;
+  letter-spacing: 2px;
+  font-size: 9px;
+  color: #8d927b;
+}
+.expedition-tools button {
+  background: #eee9db;
+  border: 1px solid #d6d3bf;
+  border-radius: 6px;
+  padding: 9px 13px;
+  color: #4d5c42;
+  font-size: 11px;
+}
+.expedition-tools button[aria-pressed="true"] {
+  background: #54664b;
+  color: #fff4d7;
+}
+#presentation-status:empty {
+  display: none;
+}
+#presentation-status {
+  font-size: 11px;
+  color: #9c633d;
+}
+.adventure {
+  background: #2d382b;
+  border-color: #526049;
+}
+.adventure-hud .eyebrow {
+  color: #c5c5a3;
+}
+.quest-tracker {
+  background: #303d2ce8;
+  border-color: #d6b46e;
+}
+.world-controls .primary {
+  background: #d5ac68;
+  color: #2e382a;
+}
+.touch-controls button {
+  background: #3b4833;
+  border-color: #667354;
+}
+.spell-panel {
+  border-top-color: #c4a567 !important;
+}
+.game-immersive {
+  overflow: hidden;
+  background: #2d382b;
+}
+.game-immersive aside,
+.game-immersive header,
+.game-immersive footer,
+.game-immersive .game-top {
+  display: none;
+}
+.game-immersive main {
+  margin: 0;
+}
+.game-immersive .content {
+  max-width: none;
+  padding: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.game-immersive .expedition-tools {
+  margin: 0;
+  padding: 9px 18px;
+  background: #253023;
+  color: #e4d9bb;
+  flex-shrink: 0;
+}
+.game-immersive .adventure {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  border-radius: 0;
+}
+.game-immersive .world-viewport {
+  flex: 1;
+  height: auto;
+  min-height: 120px;
+}
+.game-immersive .adventure-hud {
+  padding: 12px 22px;
+  flex-shrink: 0;
+}
+.game-immersive .world-controls {
+  padding: 10px 22px;
+  flex-shrink: 0;
+}
+.game-immersive .touch-controls {
+  padding-bottom: 9px;
+  flex-shrink: 0;
+}
+.game-immersive .spell-overlay {
+  z-index: 10;
+}
+.game-immersive .result {
+  overflow: auto;
+  color: #e4ddc5;
+}
+.game-immersive .result h1 {
+  color: #e4ddc5;
+}
+@media (max-width: 760px) {
+  .game-immersive .adventure-hud h2 {
+    font-size: 13px;
+  }
+  .game-immersive .adventure-hud {
+    padding: 9px 13px;
+  }
+  .game-immersive .world-controls {
+    padding: 8px 13px;
+    gap: 6px;
+  }
+  .game-immersive .world-controls small {
+    display: none;
+  }
+  .game-immersive .world-controls p {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+  .game-immersive .touch-controls button {
+    height: 30px;
+    width: 45px;
+  }
+  .game-immersive .quest-tracker {
+    padding: 9px;
+    top: 9px;
+    left: 9px;
+  }
+  .expedition-tools button {
+    font-size: 10px;
+    padding: 9px;
+  }
+}

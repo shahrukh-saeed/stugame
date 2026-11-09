@@ -1,10 +1,11 @@
+import { expeditionAudio } from "./audio.js";
 import * as THREE from "three";
 import { buildScenery, buildCharacter } from "./scenery.js";
 import {
   currentChapter,
-  canCast,
+  canAct,
   movePlayer,
-  reachedPortal,
+  reachedCamp,
   questXP,
 } from "./quest.js";
 
@@ -35,8 +36,8 @@ export function mountWorld(
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xadc4c7);
-  scene.fog = new THREE.Fog(0xadc4c7, 35, 105);
+  scene.background = new THREE.Color(0xc4bda4);
+  scene.fog = new THREE.Fog(0xc4bda4, 35, 105);
   const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 180);
   scene.add(new THREE.HemisphereLight(0xe7f4ff, 0x55634b, 2.6));
   const sun = new THREE.DirectionalLight(0xffe9c4, 3);
@@ -71,7 +72,7 @@ export function mountWorld(
   resize();
   function interact() {
     if (paused || ended) return;
-    if (canCast(state)) onChallenge(state.done.length);
+    if (canAct(state)) onChallenge(state.done.length);
   }
   const movementKeys = [
     "w",
@@ -87,6 +88,7 @@ export function mountWorld(
     "r",
   ];
   function keydown(e) {
+    expeditionAudio.unlock();
     const k = e.key.toLowerCase();
     if (movementKeys.includes(k) || k === "e" || k === " ") {
       e.preventDefault();
@@ -101,6 +103,7 @@ export function mountWorld(
     };
   const down = (e) => {
     if (paused) return;
+    expeditionAudio.unlock();
     canvas.focus();
     drag = { x: e.clientX, y: e.clientY };
     canvas.setPointerCapture(e.pointerId);
@@ -122,6 +125,7 @@ export function mountWorld(
   const touchListeners = [];
   document.querySelectorAll("[data-move]").forEach((b) => {
     const start = (e) => {
+      expeditionAudio.unlock();
       e.preventDefault();
       b.setPointerCapture(e.pointerId);
       keys.add(b.dataset.move);
@@ -157,6 +161,7 @@ export function mountWorld(
       if (keys.has("r")) yaw += dt;
       movePlayer(state, dx, dz, dt, keys.has("shift"));
     }
+    expeditionAudio.tick(!!(dx || dz), dt, keys.has("shift"));
     player.root.position.set(state.x, 0, state.z);
     player.update(t, !!(dx || dz), dx, dz);
     cameraOffset.set(
@@ -178,31 +183,31 @@ export function mountWorld(
     sun.target.updateMatrixWorld();
     scenery.update(t, paused ? 0 : dt);
     const chapter = currentChapter(state),
-      ready = canCast(state);
+      ready = canAct(state);
     if (button) {
       button.disabled = paused || !ready;
       button.textContent = chapter
         ? ready
           ? chapter.action
           : "Follow the trail"
-        : "Reach the portal";
+        : "Reach base camp";
     }
     if (status && !paused)
       status.textContent = chapter
         ? ready
           ? chapter.story
           : "Follow the stone trail deeper into the valley."
-        : "The beacon is lit. Walk into the golden portal.";
+        : "The rescue signal is active. Follow the trail to base camp.";
     const position = document.querySelector("#journey-progress");
     if (position)
-      position.textContent = `${state.done.length} / 5 paths restored · ${questXP(state)} XP · ${state.gems.length} gems`;
+      position.textContent = `${state.done.length} / 5 paths restored · ${questXP(state)} XP · ${state.gems.length} supplies`;
     // Semantic location also makes progress available to assistive tools.
     canvas.setAttribute(
       "aria-description",
-      `Valley position ${state.x.toFixed(1)}, ${state.z.toFixed(1)}. ${chapter?.title || "Portal unlocked"}`,
+      `Valley position ${state.x.toFixed(1)}, ${state.z.toFixed(1)}. ${chapter?.title || "Base camp ahead"}`,
     );
     renderer.render(scene, camera);
-    if (!paused && reachedPortal(state)) {
+    if (!paused && reachedCamp(state)) {
       onFinish();
       return;
     }

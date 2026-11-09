@@ -1,3 +1,6 @@
+import { bindPresentation } from "./game/presentation.js";
+import { expeditionAudio } from "./game/audio.js";
+import { checkMaterial } from "./lib/upload-errors.js";
 import { createQuest, resolveChapter, questXP } from "./game/quest.js";
 import { layout } from "./views/layout.js";
 import { isCorrect } from "./game/answers.js";
@@ -11,6 +14,7 @@ import { $ } from "./lib/html.js";
 
 // Application state and event orchestration. Views and game logic live in their own modules.
 export function mountApp() {
+  let draft = { title: "", notes: "", file: null };
   let mountWorld;
   let courses = loadCourses();
   let page = "dashboard",
@@ -55,10 +59,18 @@ export function mountApp() {
             answerCorrect,
             levels,
           })
-        : dashboard({ courses, page, busy, active, error, levels }),
-      overlay: modal ? upload({ busy, error }) : "",
+        : dashboard({
+            courses,
+            page,
+            busy,
+            active,
+            error: modal ? "" : error,
+            levels,
+          }),
+      overlay: modal ? upload({ busy, error, draft }) : "",
     });
     createIcons({ icons });
+    bindPresentation(!!quiz);
     document.querySelectorAll("[data-page]").forEach(
       (el) =>
         (el.onclick = () => {
@@ -78,6 +90,11 @@ export function mountApp() {
     document
       .querySelectorAll("[data-play]")
       .forEach((el) => (el.onclick = () => start(el.dataset.play)));
+    if ($("#remove-file"))
+      $("#remove-file").onclick = () => {
+        draft.file = null;
+        render();
+      };
     if ($("#close"))
       $("#close").onclick = () => {
         if (!busy) {
@@ -85,11 +102,20 @@ export function mountApp() {
           render();
         }
       };
+    if ($("#upload-form")) {
+      $('#upload-form [name="title"]').oninput = (e) => {
+        draft.title = e.target.value;
+      };
+      $('#upload-form [name="notes"]').oninput = (e) => {
+        draft.notes = e.target.value;
+      };
+    }
     if ($("#upload-form")) $("#upload-form").onsubmit = addCourse;
     if ($("#file"))
       $("#file").onchange = () => {
         $("#file-label").textContent =
           $("#file").files[0]?.name || "Click to choose a file";
+        draft.file = $("#file").files[0] || null;
       };
     document
       .querySelectorAll("[data-answer]")
@@ -109,7 +135,10 @@ export function mountApp() {
       };
     if ($("#next"))
       $("#next").onclick = () => {
-        if (answerCorrect) resolveChapter(world, index, true);
+        if (answerCorrect) {
+          resolveChapter(world, index, true);
+          expeditionAudio.cue("build");
+        }
         challengeOpen = false;
         selected = null;
         render();
@@ -128,6 +157,7 @@ export function mountApp() {
           ($("#recall-input") || $(".challenge button"))?.focus();
         },
         () => {
+          expeditionAudio.cue("complete");
           finished = true;
           active.sessions = (active.sessions || 0) + 1;
           active.xp = (active.xp || 0) + questXP(world);
@@ -159,7 +189,7 @@ export function mountApp() {
   async function addCourse(e) {
     e.preventDefault();
     const form = new FormData(e.target),
-      file = $("#file").files[0];
+      file = $("#file").files[0] || draft.file;
     const title = String(form.get("title")).trim();
     let text = String(form.get("notes")).trim();
     busy = true;
@@ -168,16 +198,16 @@ export function mountApp() {
     try {
       if (file) {
         const { extract } = await import("./lib/documents.js");
-        text = [await extract(file), text].filter(Boolean).join("\n\n");
+        text = [
+          await extract(file, (message) => {
+            if ($("#read-progress")) $("#read-progress").textContent = message;
+          }),
+          text,
+        ]
+          .filter(Boolean)
+          .join("\n\n");
       }
-      if (text.trim().length < 100)
-        throw Error(
-          "Add at least 100 characters of readable text. Scanned PDFs need text recognition first.",
-        );
-      if (text.length > 60000)
-        throw Error(
-          "Use a shorter section of material (up to 60,000 characters).",
-        );
+      checkMaterial(text, file);
       courses.unshift({
         id: crypto.randomUUID(),
         title,
@@ -189,6 +219,7 @@ export function mountApp() {
         history: [],
       });
       save();
+      draft = { title: "", notes: "", file: null };
       modal = false;
     } catch (e) {
       error = e.message;
@@ -235,6 +266,7 @@ export function mountApp() {
     selected = value;
     const q = quiz[index];
     answerCorrect = isCorrect(q, value);
+    expeditionAudio.cue(answerCorrect ? "success" : "retry");
     if (!answerCorrect) resolveChapter(world, index, false);
     if (answerCorrect && !world.missed.includes(index)) correct++;
     render();

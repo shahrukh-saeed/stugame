@@ -1,48 +1,54 @@
-import * as pdfjs from "pdfjs-dist";
-import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import { checkFile, unreadableError, UploadError } from "./upload-errors.js";
 import mammoth from "mammoth";
 import JSZip from "jszip";
-pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-export async function extract(file) {
-  if (file.size > 15 * 1024 * 1024)
-    throw Error("Please use a file smaller than 15 MB.");
-  const ext = file.name.split(".").pop().toLowerCase(),
+export async function extract(file, onProgress = () => {}) {
+  const ext = checkFile(file);
+  let buffer;
+  try {
     buffer = await file.arrayBuffer();
-  if (["txt", "md"].includes(ext)) return new TextDecoder().decode(buffer);
-  if (ext === "docx")
-    return (await mammoth.extractRawText({ arrayBuffer: buffer })).value;
-  if (ext === "pdf") {
-    const pdf = await pdfjs.getDocument({ data: buffer }).promise;
-    let pages = [];
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const p = await pdf.getPage(i);
-      pages.push((await p.getTextContent()).items.map((x) => x.str).join(" "));
+  } catch {
+    throw new UploadError(
+      "file-access",
+      "Your browser could not open the selected file. Download it to this device first, then select it again.",
+    );
+  }
+  try {
+    if (["txt", "md"].includes(ext)) return new TextDecoder().decode(buffer);
+    if (ext === "docx")
+      return (await mammoth.extractRawText({ arrayBuffer: buffer })).value;
+    if (ext === "pdf") {
+      const { extractPDF } = await import("./pdf.js");
+      return extractPDF(buffer, onProgress);
     }
-    await pdf.destroy();
-    return pages.join("\n\n");
+    if (ext === "pptx") {
+      const zip = await JSZip.loadAsync(buffer);
+      const slides = Object.keys(zip.files)
+        .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
+        .sort(
+          (a, b) =>
+            Number(a.match(/slide(\d+)/)[1]) - Number(b.match(/slide(\d+)/)[1]),
+        );
+      if (!slides.length)
+        throw new UploadError(
+          "no-slides",
+          "This PowerPoint file contains no readable slides. Export it as a PDF or choose another presentation.",
+        );
+      return (
+        await Promise.all(
+          slides.map(async (n) => {
+            const xml = new DOMParser().parseFromString(
+              await zip.file(n).async("text"),
+              "application/xml",
+            );
+            return [...xml.getElementsByTagNameNS("*", "t")]
+              .map((x) => x.textContent)
+              .join(" ");
+          }),
+        )
+      ).join("\n\n");
+    }
+  } catch (error) {
+    throw unreadableError(file, error);
   }
-  if (ext === "pptx") {
-    const zip = await JSZip.loadAsync(buffer);
-    const slides = Object.keys(zip.files)
-      .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
-      .sort(
-        (a, b) =>
-          Number(a.match(/slide(\d+)/)[1]) - Number(b.match(/slide(\d+)/)[1]),
-      );
-    return (
-      await Promise.all(
-        slides.map(async (n) => {
-          const xml = new DOMParser().parseFromString(
-            await zip.file(n).async("text"),
-            "application/xml",
-          );
-          return [...xml.getElementsByTagNameNS("*", "t")]
-            .map((x) => x.textContent)
-            .join(" ");
-        }),
-      )
-    ).join("\n\n");
-  }
-  throw Error("Please choose a PDF, PPTX, DOCX, TXT, or Markdown file.");
 }

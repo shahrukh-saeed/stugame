@@ -4,9 +4,9 @@ import {
   createQuest,
   movePlayer,
   resolveChapter,
-  canCast,
+  canAct,
   currentChapter,
-  reachedPortal,
+  reachedCamp,
   questXP,
   CHAPTERS,
 } from "../src/game/quest.js";
@@ -15,8 +15,8 @@ test("unanswered gates physically block movement, including sideways bypasses", 
   movePlayer(state, 1, -1, 50, true);
   assert.equal(state.z, -4);
   assert.equal(state.x, 7);
-  assert.ok(canCast(state));
-  assert.equal(reachedPortal(state), false);
+  assert.ok(canAct(state));
+  assert.equal(reachedCamp(state), false);
   assert.equal(resolveChapter(state, 3, true), false);
   assert.equal(state.done.length, 0);
   resolveChapter(state, 0, false);
@@ -42,7 +42,7 @@ test("only solved chapters unlock the portal; retries do not farm XP or advance 
   assert.equal(questXP(state), 80);
   state.gems.push(0, 1);
   assert.equal(questXP(state), 90);
-  assert.equal(reachedPortal(state), false);
+  assert.equal(reachedCamp(state), false);
   movePlayer(state, 0, -1, 50);
-  assert.ok(reachedPortal(state));
+  assert.ok(reachedCamp(state));
 });
