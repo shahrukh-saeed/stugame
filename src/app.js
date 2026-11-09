@@ -1,3 +1,4 @@
+import { createQuest, resolveChapter, questXP } from "./game/quest.js";
 import { layout } from "./views/layout.js";
 import { isCorrect } from "./game/answers.js";
 import { loadCourses, saveCourses } from "./lib/storage.js";
@@ -5,13 +6,12 @@ import { generateQuest } from "./lib/api.js";
 import { game } from "./views/game.js";
 import { upload } from "./views/upload.js";
 import { dashboard } from "./views/dashboard.js";
-import { mountWorld } from "./game/world.js";
 import { createIcons, icons } from "lucide";
-import { extract } from "./lib/documents.js";
 import { $ } from "./lib/html.js";
 
 // Application state and event orchestration. Views and game logic live in their own modules.
 export function mountApp() {
+  let mountWorld;
   let courses = loadCourses();
   let page = "dashboard",
     modal = false,
@@ -109,7 +109,7 @@ export function mountApp() {
       };
     if ($("#next"))
       $("#next").onclick = () => {
-        world.done.push(index);
+        if (answerCorrect) resolveChapter(world, index, true);
         challengeOpen = false;
         selected = null;
         render();
@@ -123,20 +123,20 @@ export function mountApp() {
           index = i;
           selected = null;
           challengeOpen = true;
-          world.target = null;
+
           render();
-          $("#recall-input")?.focus();
-          $(".challenge button")?.focus();
+          ($("#recall-input") || $(".challenge button"))?.focus();
         },
         () => {
           finished = true;
           active.sessions = (active.sessions || 0) + 1;
-          active.xp = (active.xp || 0) + correct * 20;
+          active.xp = (active.xp || 0) + questXP(world);
           active.best = Math.max(active.best || 0, correct);
           if (correct >= 4) active.level = Math.min(4, (active.level || 1) + 1);
           save();
           render();
         },
+        challengeOpen,
       );
     if ($("#again")) $("#again").onclick = () => start(active.id);
     if ($("#exit"))
@@ -166,7 +166,10 @@ export function mountApp() {
     error = "";
     render();
     try {
-      if (file) text = [await extract(file), text].filter(Boolean).join("\n\n");
+      if (file) {
+        const { extract } = await import("./lib/documents.js");
+        text = [await extract(file), text].filter(Boolean).join("\n\n");
+      }
       if (text.trim().length < 100)
         throw Error(
           "Add at least 100 characters of readable text. Scanned PDFs need text recognition first.",
@@ -203,7 +206,11 @@ export function mountApp() {
     quiz = null;
     render();
     try {
-      const result = await generateQuest(active);
+      const [engine, result] = await Promise.all([
+        import("./game/world.js"),
+        generateQuest(active),
+      ]);
+      mountWorld = engine.mountWorld;
       quiz = result.questions;
       active.history = [
         ...(active.history || []),
@@ -214,7 +221,7 @@ export function mountApp() {
       selected = null;
       correct = 0;
       finished = false;
-      world = { x: 90, y: 300, done: [], target: null };
+      world = createQuest();
       challengeOpen = false;
     } catch (e) {
       error = e.message;
@@ -228,7 +235,8 @@ export function mountApp() {
     selected = value;
     const q = quiz[index];
     answerCorrect = isCorrect(q, value);
-    if (answerCorrect) correct++;
+    if (!answerCorrect) resolveChapter(world, index, false);
+    if (answerCorrect && !world.missed.includes(index)) correct++;
     render();
   }
   render();
