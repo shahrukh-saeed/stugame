@@ -1,3 +1,4 @@
+import { collectSupply } from "./inventory.js";
 import { expeditionAudio } from "./audio.js";
 import * as THREE from "three";
 import { CHAPTERS } from "./quest.js";
@@ -225,12 +226,14 @@ export function buildScenery(scene, state) {
       g.rotation.y = t;
       g.position.y = 1 + Math.sin(t * 2 + i) * 0.15;
       if (
+        dt > 0 &&
         g.visible &&
         Math.hypot(state.x - g.position.x, state.z - g.position.z) < 1
       ) {
-        state.gems.push(i);
-        expeditionAudio.cue("pickup");
-        g.visible = false;
+        if (collectSupply(state, i)) {
+          expeditionAudio.cue("pickup");
+          g.visible = false;
+        }
       }
     });
   }

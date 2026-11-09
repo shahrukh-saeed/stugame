@@ -56,11 +56,15 @@ export function mountWorld(
   let frame,
     last = 0,
     ended = false,
-    yaw = 0,
+    yaw = state.camera?.yaw || 0,
     drag = null;
   const cameraOffset = new THREE.Vector3(10, 9, 14),
     look = new THREE.Vector3(state.x, 1, state.z - 4);
-  camera.position.set(state.x + 10, 9, state.z + 14);
+  if (state.camera) {
+    camera.position.fromArray(state.camera.position);
+    look.fromArray(state.camera.look);
+    camera.fov = state.camera.fov;
+  } else camera.position.set(state.x + 10, 9, state.z + 14);
   function resize() {
     const r = canvas.getBoundingClientRect();
     renderer.setSize(r.width, r.height, false);
@@ -101,17 +105,51 @@ export function mountWorld(
       keys.clear();
       drag = null;
     };
+  const raycaster = new THREE.Raycaster(),
+    ground = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const down = (e) => {
     if (paused) return;
     expeditionAudio.unlock();
     canvas.focus();
-    drag = { x: e.clientX, y: e.clientY };
+    drag = {
+      x: e.clientX,
+      y: e.clientY,
+      startX: e.clientX,
+      startY: e.clientY,
+      moved: false,
+    };
     canvas.setPointerCapture(e.pointerId);
   };
   const pointer = (e) => {
     if (!drag) return;
-    yaw += (e.clientX - drag.x) * 0.008;
-    drag = { x: e.clientX, y: e.clientY };
+    if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 6)
+      drag.moved = true;
+    if (drag.moved) yaw += (e.clientX - drag.x) * 0.008;
+    drag.x = e.clientX;
+    drag.y = e.clientY;
+  };
+  const up = (e) => {
+    if (drag && !drag.moved && !paused) {
+      const rect = canvas.getBoundingClientRect();
+      raycaster.setFromCamera(
+        new THREE.Vector2(
+          ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          (-(e.clientY - rect.top) / rect.height) * 2 + 1,
+        ),
+        camera,
+      );
+      const point = raycaster.ray.intersectPlane(ground, new THREE.Vector3());
+      if (point && Math.abs(point.x) < 12 && point.z <= 14 && point.z >= -102) {
+        state.target = {
+          x: Math.max(-7, Math.min(7, point.x)),
+          z: Math.max(
+            currentChapter(state)?.z + 2 || -100,
+            Math.min(13, point.z),
+          ),
+        };
+      }
+    }
+    clear();
   };
   canvas.addEventListener("keydown", keydown);
   window.addEventListener("keyup", keyup);
@@ -119,29 +157,9 @@ export function mountWorld(
   window.addEventListener("blur", clear);
   canvas.addEventListener("pointerdown", down);
   canvas.addEventListener("pointermove", pointer);
-  canvas.addEventListener("pointerup", clear);
+  canvas.addEventListener("pointerup", up);
   canvas.addEventListener("pointercancel", clear);
   if (button) button.onclick = interact;
-  const touchListeners = [];
-  document.querySelectorAll("[data-move]").forEach((b) => {
-    const start = (e) => {
-      expeditionAudio.unlock();
-      e.preventDefault();
-      b.setPointerCapture(e.pointerId);
-      keys.add(b.dataset.move);
-    };
-    const stop = () => keys.delete(b.dataset.move);
-    b.addEventListener("pointerdown", start);
-    b.addEventListener("pointerup", stop);
-    b.addEventListener("pointercancel", stop);
-    b.addEventListener("lostpointercapture", stop);
-    touchListeners.push(() => {
-      b.removeEventListener("pointerdown", start);
-      b.removeEventListener("pointerup", stop);
-      b.removeEventListener("pointercancel", stop);
-      b.removeEventListener("lostpointercapture", stop);
-    });
-  });
   function draw(now) {
     if (ended) return;
     const t = now / 1000,
@@ -153,6 +171,18 @@ export function mountWorld(
       dz =
         (keys.has("s") || keys.has("arrowdown") ? 1 : 0) -
         (keys.has("w") || keys.has("arrowup") ? 1 : 0);
+    if (dx || dz) state.target = null;
+    else if (state.target && !paused) {
+      const x = state.target.x - state.x,
+        z = state.target.z - state.z,
+        d = Math.hypot(x, z);
+      if (d > 0.25) {
+        dx = x / d;
+        dz = z / d;
+      } else state.target = null;
+    }
+    const wasX = state.x,
+      wasZ = state.z;
     if (paused || document.hidden) {
       dx = 0;
       dz = 0;
@@ -161,20 +191,30 @@ export function mountWorld(
       if (keys.has("r")) yaw += dt;
       movePlayer(state, dx, dz, dt, keys.has("shift"));
     }
-    expeditionAudio.tick(!!(dx || dz), dt, keys.has("shift"));
+    const moved = Math.hypot(state.x - wasX, state.z - wasZ) > 0.001;
+    if (state.target && !moved) state.target = null;
+    expeditionAudio.tick(moved, dt, keys.has("shift") && state.stamina > 0);
     player.root.position.set(state.x, 0, state.z);
-    player.update(t, !!(dx || dz), dx, dz);
+    player.update(t, moved, dx, dz);
     cameraOffset.set(
       Math.sin(yaw) * 16 + Math.cos(yaw) * 7,
       9,
       Math.cos(yaw) * 16 - Math.sin(yaw) * 7,
     );
+    if (state.scouting) cameraOffset.multiplyScalar(0.8);
+    camera.fov = THREE.MathUtils.damp(
+      camera.fov,
+      state.scouting ? 38 : 52,
+      5,
+      dt,
+    );
+    camera.updateProjectionMatrix();
     camera.position.lerp(
       cameraOffset.add(new THREE.Vector3(state.x, 0, state.z)),
       1 - Math.exp(-5 * dt),
     );
     look.lerp(
-      new THREE.Vector3(state.x, 1, state.z - 4),
+      new THREE.Vector3(state.x, 1, state.z - (state.scouting ? 14 : 4)),
       1 - Math.exp(-5 * dt),
     );
     camera.lookAt(look);
@@ -193,14 +233,36 @@ export function mountWorld(
         : "Reach base camp";
     }
     if (status && !paused)
-      status.textContent = chapter
-        ? ready
-          ? chapter.story
-          : "Follow the stone trail deeper into the valley."
-        : "The rescue signal is active. Follow the trail to base camp.";
+      status.textContent =
+        state.notice?.until > Date.now()
+          ? state.notice.message
+          : chapter
+            ? ready
+              ? chapter.story
+              : "Follow the stone trail deeper into the valley."
+            : "The rescue signal is active. Follow the trail to base camp.";
     const position = document.querySelector("#journey-progress");
     if (position)
       position.textContent = `${state.done.length} / 5 paths restored · ${questXP(state)} XP · ${state.gems.length} supplies`;
+    const stamina = document.querySelector("#stamina-value"),
+      fill = document.querySelector("#stamina-fill"),
+      boost = document.querySelector("#boost-status"),
+      load = document.querySelector("#pack-load"),
+      bearing = document.querySelector("#trail-bearing");
+    if (stamina) stamina.textContent = `${Math.round(state.stamina)}%`;
+    if (fill) fill.style.width = `${state.stamina}%`;
+    if (boost)
+      boost.textContent = state.scouting
+        ? "BINOCULARS · SCOUTING"
+        : state.boostSeconds > 0
+          ? `ENERGY BOOST · ${Math.ceil(state.boostSeconds)}s`
+          : state.stamina < 20
+            ? "Low stamina · walk or use supplies"
+            : "Walk to recover · Shift to sprint";
+    if (load)
+      load.textContent = `${Object.values(state.inventory).reduce((a, b) => a + b, 0)}/8`;
+    if (bearing)
+      bearing.textContent = `${Math.round(Math.hypot(state.x, (chapter?.z || -98) - state.z))} m to ${chapter ? "objective" : "base camp"} · ${Math.abs(state.x) < 1 ? "N ↑" : state.x > 0 ? "NW ↖" : "NE ↗"}`;
     // Semantic location also makes progress available to assistive tools.
     canvas.setAttribute(
       "aria-description",
@@ -215,6 +277,12 @@ export function mountWorld(
   }
   frame = requestAnimationFrame(draw);
   return () => {
+    state.camera = {
+      position: camera.position.toArray(),
+      look: look.toArray(),
+      fov: camera.fov,
+      yaw,
+    };
     ended = true;
     cancelAnimationFrame(frame);
     observer.disconnect();
@@ -224,9 +292,9 @@ export function mountWorld(
     window.removeEventListener("blur", clear);
     canvas.removeEventListener("pointerdown", down);
     canvas.removeEventListener("pointermove", pointer);
-    canvas.removeEventListener("pointerup", clear);
+    canvas.removeEventListener("pointerup", up);
     canvas.removeEventListener("pointercancel", clear);
-    touchListeners.forEach((fn) => fn());
+
     const geometries = new Set(),
       materials = new Set();
     scene.traverse((o) => {

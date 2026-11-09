@@ -1,3 +1,4 @@
+import { createInventory, updateStamina } from "./inventory.js";
 export const CHAPTERS = [
   {
     title: "Ravine crossing",
@@ -47,7 +48,18 @@ export const CHAPTERS = [
   },
 ];
 export function createQuest() {
-  return { x: 0, z: 10, done: [], missed: [], gems: [], target: null };
+  return {
+    x: 0,
+    z: 10,
+    done: [],
+    missed: [],
+    gems: [],
+    target: null,
+    inventory: createInventory(),
+    stamina: 100,
+    boostSeconds: 0,
+    scouting: false,
+  };
 }
 export function currentChapter(state) {
   return CHAPTERS[state.done.length] || null;
@@ -58,7 +70,14 @@ export function canAct(state) {
 }
 export function movePlayer(state, dx, dz, dt, sprint = false) {
   const length = Math.hypot(dx, dz) || 1,
-    speed = sprint ? 12 : 8;
+    speed =
+      sprint && state.stamina > 0 && !state.exhausted
+        ? state.boostSeconds > 0
+          ? 15
+          : 12
+        : 8;
+  const startX = state.x,
+    startZ = state.z;
   state.x = Math.max(-7, Math.min(7, state.x + (dx / length) * speed * dt));
   const frontier = currentChapter(state) ? currentChapter(state).z + 2 : -100;
   state.z = Math.max(
@@ -67,6 +86,8 @@ export function movePlayer(state, dx, dz, dt, sprint = false) {
   );
   if (state.z < -10 && state.z > -19)
     state.x = Math.max(-2, Math.min(2, state.x));
+  const moving = Math.hypot(state.x - startX, state.z - startZ) > 0.001;
+  updateStamina(state, moving, sprint && moving && speed > 8, dt);
 }
 export function resolveChapter(state, index, correct) {
   if (index !== state.done.length || index >= CHAPTERS.length) return false;
@@ -74,6 +95,8 @@ export function resolveChapter(state, index, correct) {
     if (!state.missed.includes(index)) state.missed.push(index);
     return false;
   }
+  if ((index === 0 || index === 3) && state.inventory.rope > 0)
+    state.inventory.rope--;
   state.done.push(index);
   state.effect = { index, time: Date.now() };
   return true;

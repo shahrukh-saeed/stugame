@@ -1,3 +1,4 @@
+import { useItem, dropItem, notify } from "./game/inventory.js";
 import { bindPresentation } from "./game/presentation.js";
 import { expeditionAudio } from "./game/audio.js";
 import { checkMaterial } from "./lib/upload-errors.js";
@@ -15,6 +16,7 @@ import { $ } from "./lib/html.js";
 // Application state and event orchestration. Views and game logic live in their own modules.
 export function mountApp() {
   let draft = { title: "", notes: "", file: null };
+  let backpackOpen = false;
   let mountWorld;
   let courses = loadCourses();
   let page = "dashboard",
@@ -55,6 +57,7 @@ export function mountApp() {
             index,
             world,
             challengeOpen,
+            backpackOpen,
             selected,
             answerCorrect,
             levels,
@@ -144,6 +147,66 @@ export function mountApp() {
         render();
         $("#world")?.focus();
       };
+    if ($("#backpack"))
+      $("#backpack").onclick = () => {
+        backpackOpen = !backpackOpen;
+        world.target = null;
+        render();
+        $("#close-backpack")?.focus();
+      };
+    const panel = $(".backpack-panel");
+    if (panel)
+      panel.onkeydown = (e) => {
+        if (e.key === "Tab") {
+          const focusable = [
+              ...panel.querySelectorAll("button:not(:disabled)"),
+            ],
+            first = focusable[0],
+            last = focusable.at(-1);
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      };
+    if ($("#close-backpack"))
+      $("#close-backpack").onclick = () => {
+        backpackOpen = false;
+        render();
+        $("#world")?.focus();
+      };
+    document.querySelectorAll("[data-use]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          if (useItem(world, b.dataset.use)) expeditionAudio.cue("pickup");
+          render();
+          $("#close-backpack")?.focus();
+        }),
+    );
+    document.querySelectorAll("[data-drop]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          dropItem(world, b.dataset.drop);
+          render();
+          $("#close-backpack")?.focus();
+        }),
+    );
+    if ($("#scout-route"))
+      $("#scout-route").onclick = () => {
+        world.scouting = !world.scouting;
+        backpackOpen = false;
+        notify(
+          world,
+          world.scouting
+            ? "Binoculars up. Survey the route ahead."
+            : "Binoculars packed.",
+        );
+        render();
+        $("#world")?.focus();
+      };
     if ($("#world"))
       worldCleanup = mountWorld(
         $("#world"),
@@ -152,7 +215,7 @@ export function mountApp() {
           index = i;
           selected = null;
           challengeOpen = true;
-
+          world.target = null;
           render();
           ($("#recall-input") || $(".challenge button"))?.focus();
         },
@@ -166,7 +229,7 @@ export function mountApp() {
           save();
           render();
         },
-        challengeOpen,
+        challengeOpen || backpackOpen,
       );
     if ($("#again")) $("#again").onclick = () => start(active.id);
     if ($("#exit"))
@@ -253,6 +316,7 @@ export function mountApp() {
       correct = 0;
       finished = false;
       world = createQuest();
+      backpackOpen = false;
       challengeOpen = false;
     } catch (e) {
       error = e.message;
@@ -271,5 +335,22 @@ export function mountApp() {
     if (answerCorrect && !world.missed.includes(index)) correct++;
     render();
   }
+  document.addEventListener("keydown", (e) => {
+    if (
+      !quiz ||
+      finished ||
+      challengeOpen ||
+      /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) ||
+      e.repeat
+    )
+      return;
+    if (e.key.toLowerCase() === "b" || (e.key === "Escape" && backpackOpen)) {
+      e.preventDefault();
+      backpackOpen = !backpackOpen;
+      world.target = null;
+      render();
+      (backpackOpen ? $("#close-backpack") : $("#world"))?.focus();
+    }
+  });
   render();
 }

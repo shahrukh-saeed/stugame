@@ -117,31 +117,7 @@
   font-size: 11px;
   color: #8b9982;
 }
-.touch-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 0 18px;
-  gap: 5px;
-}
-.touch-controls > div {
-  display: flex;
-  gap: 5px;
-}
-.touch-controls button {
-  border: 1px solid #57726d;
-  background: #29454a;
-  color: #d8e9dc;
-  width: 42px;
-  height: 36px;
-  border-radius: 7px;
-  touch-action: none;
-  font-size: 20px;
-  user-select: none;
-}
-.touch-controls button:active {
-  background: #57726d;
-}
+
 .spell-overlay {
   position: fixed;
   inset: 0;
@@ -250,10 +226,6 @@
   .spell-panel h2 {
     font-size: 19px;
   }
-  .touch-controls button {
-    width: 54px;
-    height: 42px;
-  }
 }
 /* Expedition equipment and immersive presentation. */
 .expedition-tools {
@@ -303,10 +275,7 @@
   background: #d5ac68;
   color: #2e382a;
 }
-.touch-controls button {
-  background: #3b4833;
-  border-color: #667354;
-}
+
 .spell-panel {
   border-top-color: #c4a567 !important;
 }
@@ -358,10 +327,7 @@
   padding: 10px 22px;
   flex-shrink: 0;
 }
-.game-immersive .touch-controls {
-  padding-bottom: 9px;
-  flex-shrink: 0;
-}
+
 .game-immersive .spell-overlay {
   z-index: 10;
 }
@@ -390,10 +356,7 @@
     font-size: 10px;
     line-height: 1.5;
   }
-  .game-immersive .touch-controls button {
-    height: 30px;
-    width: 45px;
-  }
+
   .game-immersive .quest-tracker {
     padding: 9px;
     top: 9px;
@@ -402,5 +365,238 @@
   .expedition-tools button {
     font-size: 10px;
     padding: 9px;
+  }
+}
+.field-vitals {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: 190px;
+  padding: 13px 15px;
+  border-radius: 9px;
+  background: #263623dd;
+  color: #e1dec7;
+  pointer-events: none;
+}
+.field-vitals > span {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.field-vitals small {
+  display: block;
+  margin-top: 8px;
+  font-size: 8px;
+  color: #b7bea4;
+}
+.stamina-track {
+  height: 5px;
+  background: #3c4936;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+.stamina-track > span {
+  height: 100%;
+  display: block;
+  background: #b6c282;
+  transition: width 0.15s linear;
+}
+.expedition-tools #backpack {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.expedition-tools #backpack svg {
+  width: 15px;
+  height: 15px;
+}
+.expedition-tools #backpack span {
+  font-size: 9px;
+  opacity: 0.7;
+}
+.backpack-panel {
+  position: relative;
+  width: 490px;
+  max-height: 94dvh;
+  overflow: auto;
+  background: #f6f3e9;
+  border: 1px solid #d0cdb8;
+  border-top: 4px solid #a0ac7b;
+  box-shadow: 0 20px 90px #10263255;
+  border-radius: 12px;
+  padding: 30px;
+  color: #35432f;
+}
+.backpack-panel h2 {
+  font-size: 24px;
+  letter-spacing: -0.8px;
+  margin: 12px 0 8px;
+}
+.pack-subtitle {
+  font-size: 12px;
+  color: #8c927c;
+}
+.pack-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  font-size: 11px;
+}
+.pack-summary > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pack-summary svg {
+  width: 15px;
+}
+.backpack-panel h3 {
+  font-size: 12px;
+  margin: 24px 0 14px;
+}
+.backpack-panel h3 small {
+  font-weight: 400;
+  font-size: 9px;
+  color: #8d957d;
+  margin-left: 8px;
+}
+.pack-items {
+  display: grid;
+  gap: 11px;
+}
+.pack-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 16px;
+  background: #fffdf5;
+  border: 1px solid #e3dfcf;
+  border-radius: 9px;
+}
+.pack-item-icon {
+  background: #edf0de;
+  border-radius: 9px;
+  padding: 10px;
+  color: #869965;
+}
+.pack-item > div:last-child {
+  flex: 1;
+}
+.pack-item h4 {
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 7px;
+}
+.pack-item h4 b {
+  font-size: 11px;
+  color: #899970;
+}
+.pack-item p {
+  font-size: 10px;
+  line-height: 1.7;
+  margin: 0;
+  color: #8b927b;
+}
+.pack-item small {
+  display: block;
+  font-size: 9px;
+  color: #a2a48b;
+  margin-top: 9px;
+}
+.pack-item-actions {
+  display: flex;
+  gap: 9px;
+  margin-top: 11px;
+}
+.pack-item button,
+.pack-equipment button {
+  font-size: 10px;
+  border: 1px solid #cbd1b8;
+  background: #edf0df;
+  color: #526442;
+  padding: 7px 10px;
+  border-radius: 5px;
+}
+.pack-item-actions button:last-child {
+  background: none;
+  color: #99967e;
+  border-color: #e1ddcb;
+}
+.pack-equipment {
+  display: grid;
+  gap: 15px;
+}
+.pack-equipment article {
+  display: flex;
+  gap: 13px;
+}
+.pack-equipment article > svg {
+  color: #879574;
+  width: 21px;
+  margin-top: 2px;
+}
+.pack-equipment b {
+  font-size: 11px;
+}
+.pack-equipment p {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #8b927b;
+  margin: 5px 0 8px;
+}
+.pack-message {
+  font-size: 10px;
+  background: #e9eddb;
+  border-radius: 6px;
+  padding: 12px;
+  color: #758064;
+  line-height: 1.7;
+}
+.game-immersive .field-vitals {
+  right: 22px;
+  bottom: 20px;
+}
+@media (max-width: 760px) {
+  .field-vitals {
+    right: 12px;
+    bottom: 12px;
+    width: 145px;
+    padding: 11px;
+  }
+  .field-vitals small {
+    font-size: 7px;
+  }
+  .companion-caption {
+    display: none;
+  }
+  .expedition-tools {
+    gap: 5px;
+  }
+  .expedition-tools > span {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .expedition-tools #backpack span {
+    display: none;
+  }
+  .expedition-tools button {
+    padding: 8px;
+    font-size: 9px;
+  }
+  .expedition-tools #backpack svg {
+    width: 13px;
+  }
+  .backpack-panel {
+    padding: 24px 19px;
+  }
+  .backpack-panel h2 {
+    font-size: 22px;
+  }
+  .game-immersive .field-vitals {
+    right: 12px;
+    bottom: 12px;
   }
 }
