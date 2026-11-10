@@ -17,7 +17,7 @@
   color: #ffcf83;
 }
 .adventure-hud h2 {
-  font-size: 26px;
+  font-size: 24px;
   margin: 7px 0 0;
   letter-spacing: -0.5px;
 }
@@ -69,7 +69,7 @@
 }
 .quest-tracker b {
   font-family: var(--heading);
-  font-size: 18px;
+  font-size: 17px;
   color: #f3ecd6;
 }
 .quest-tracker small {
@@ -138,7 +138,7 @@
   border-top: 4px solid #ffc064 !important;
 }
 .spell-panel h2 {
-  font-size: 27px;
+  font-size: 25px;
   margin: 20px 0;
 }
 .spell-story {
@@ -173,7 +173,7 @@
     gap: 10px;
   }
   .adventure-hud h2 {
-    font-size: 19px;
+    font-size: 18px;
   }
   .crystal-count {
     font-size: 13px;
@@ -224,7 +224,7 @@
     max-height: 94vh;
   }
   .spell-panel h2 {
-    font-size: 25px;
+    font-size: 23px;
   }
 }
 /* Expedition equipment and immersive presentation. */
@@ -430,7 +430,7 @@
   color: #f8edce;
 }
 .backpack-panel h2 {
-  font-size: 32px;
+  font-size: 29px;
   letter-spacing: -0.8px;
   margin: 12px 0 8px;
 }
@@ -593,7 +593,7 @@
     padding: 24px 19px;
   }
   .backpack-panel h2 {
-    font-size: 29px;
+    font-size: 27px;
   }
   .game-immersive .field-vitals {
     right: 12px;
@@ -607,7 +607,7 @@
   border-radius: 18px;
 }
 .adventure-hud h2 {
-  font-size: 28px;
+  font-size: 26px;
 }
 .adventure-hud .eyebrow {
   font-size: 12px;
@@ -632,7 +632,7 @@
   line-height: 1.6;
 }
 .world-controls p {
-  font-size: 18px;
+  font-size: 17px;
 }
 .world-controls small {
   font-size: 14px;
@@ -654,20 +654,20 @@
   color: var(--ink);
 }
 .spell-panel h2 {
-  font-size: 30px;
+  font-size: 28px;
 }
 .spell-story,
 .spell-panel .feedback p {
-  font-size: 18px;
+  font-size: 17px;
 }
 .spell-panel form label {
-  font-size: 17px;
+  font-size: 16px;
 }
 .spell-panel details {
   font-size: 16px;
 }
 .spell-panel .feedback h3 {
-  font-size: 25px;
+  font-size: 23px;
 }
 .backpack-panel {
   width: 550px;
@@ -676,7 +676,7 @@
   font-size: 16px;
 }
 .pack-item h4 {
-  font-size: 19px;
+  font-size: 18px;
 }
 .pack-item p,
 .pack-equipment p {
@@ -693,13 +693,13 @@
   font-size: 16px;
 }
 .backpack-panel h3 {
-  font-size: 21px;
+  font-size: 20px;
 }
 .backpack-panel h3 small {
   font-size: 13px;
 }
 .pack-equipment b {
-  font-size: 18px;
+  font-size: 17px;
 }
 .pack-item button,
 .pack-equipment button {
@@ -717,10 +717,10 @@
   gap: 16px;
 }
 .game-immersive .world-controls p {
-  font-size: 17px;
+  font-size: 16px;
 }
 .game-immersive .adventure-hud h2 {
-  font-size: 25px;
+  font-size: 23px;
 }
 @media (max-width: 760px) {
   .expedition-tools {
@@ -748,7 +748,7 @@
     gap: 12px;
   }
   .adventure-hud h2 {
-    font-size: 24px;
+    font-size: 22px;
   }
   .crystal-count {
     font-size: 13px;
@@ -763,7 +763,7 @@
     font-size: 12px;
   }
   .quest-tracker b {
-    font-size: 19px;
+    font-size: 18px;
   }
   .quest-tracker small {
     font-size: 14px;
@@ -786,28 +786,28 @@
     font-size: 14px;
   }
   .game-immersive .adventure-hud h2 {
-    font-size: 21px;
+    font-size: 20px;
   }
   .spell-panel {
     padding: 25px 22px;
   }
   .spell-panel h2 {
-    font-size: 27px;
+    font-size: 25px;
   }
   .spell-story {
-    font-size: 17px;
+    font-size: 16px;
   }
   .spell-panel .feedback p {
-    font-size: 17px;
+    font-size: 16px;
   }
   .spell-panel .feedback h3 {
-    font-size: 24px;
+    font-size: 22px;
   }
   .backpack-panel {
     padding: 28px 20px;
   }
   .backpack-panel h2 {
-    font-size: 30px;
+    font-size: 28px;
   }
   .pack-summary {
     font-size: 16px;
@@ -820,13 +820,13 @@
     padding: 8px;
   }
   .pack-item h4 {
-    font-size: 19px;
+    font-size: 18px;
   }
   .pack-item p {
     font-size: 16px;
   }
   .backpack-panel h3 {
-    font-size: 22px;
+    font-size: 21px;
   }
   .backpack-panel h3 small {
     display: block;
@@ -837,5 +837,130 @@
   }
   .game-immersive .field-vitals {
     bottom: 13px;
+  }
+}
+.game-settings {
+  position: relative;
+  margin-left: auto;
+  color: #c7d6bd;
+}
+.game-settings summary {
+  cursor: pointer;
+  list-style: none;
+  border: 1px solid #617b60;
+  padding: 10px 15px;
+  border-radius: 9px;
+  font-size: 14px;
+}
+.game-settings summary::-webkit-details-marker {
+  display: none;
+}
+.game-settings[open] summary {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.settings-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 170px;
+  padding: 9px;
+  display: grid;
+  gap: 7px;
+  background: #173a35;
+  border: 1px solid #5b795e;
+  border-radius: 11px;
+  z-index: 4;
+  box-shadow: 0 10px 25px #07191966;
+}
+.settings-menu button {
+  width: 100%;
+  text-align: left;
+}
+.control-help {
+  font-size: 13px;
+  color: #bed0b6;
+}
+.control-help summary {
+  cursor: pointer;
+  padding: 5px 0;
+  width: max-content;
+}
+.world-controls .control-help p {
+  font-size: 13px;
+  color: #bed0b6;
+  margin-top: 7px;
+  max-width: 540px;
+}
+.adventure-hud {
+  padding: 16px 24px;
+}
+.adventure-hud h2 {
+  font-size: 23px;
+  margin: 0;
+}
+.quest-tracker {
+  padding: 13px 16px;
+}
+.quest-tracker b {
+  font-size: 17px;
+}
+.quest-tracker small {
+  font-size: 13px;
+}
+.world-controls p {
+  font-size: 16px;
+}
+.field-vitals > span {
+  font-size: 12px;
+}
+.field-vitals small {
+  font-size: 11px;
+}
+.field-vitals {
+  width: 215px;
+  padding: 12px;
+}
+.game-top > span {
+  font-size: 13px;
+}
+.game-immersive .adventure-hud h2 {
+  font-size: 22px;
+}
+@media (max-width: 760px) {
+  .expedition-tools {
+    flex-wrap: nowrap;
+  }
+  .expedition-tools > span.kit-slot {
+    display: block;
+  }
+  .expedition-tools .settings-menu button {
+    font-size: 14px;
+  }
+  .game-settings summary {
+    font-size: 14px;
+  }
+  .game-immersive .adventure-hud h2,
+  .adventure-hud h2 {
+    font-size: 21px;
+  }
+  .quest-tracker b {
+    font-size: 16px;
+  }
+  .quest-tracker small {
+    font-size: 13px;
+  }
+  .world-controls p,
+  .game-immersive .world-controls p {
+    font-size: 15px;
+  }
+  .field-vitals {
+    width: 180px;
+  }
+  .settings-menu {
+    min-width: 170px;
+  }
+  .world-controls .control-help p {
+    font-size: 13px;
   }
 }

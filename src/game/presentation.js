@@ -38,6 +38,11 @@ export function bindPresentation(active) {
     native = false;
   }
   sync();
+  const settings = document.querySelector(".game-settings");
+  if (settings)
+    settings.addEventListener("click", (e) => {
+      if (e.target.closest("button")) settings.open = false;
+    });
   const full = document.querySelector("#fullscreen");
   if (full)
     full.onclick = async () => {
