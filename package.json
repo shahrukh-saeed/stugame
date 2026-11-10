@@ -11,6 +11,8 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@fontsource/fredoka": "^5.3.0",
+    "@fontsource/nunito-sans": "^5.3.0",
     "@tesseract.js-data/eng": "^1.0.0",
     "jszip": "^3.10.1",
     "lucide": "^0.468.0",

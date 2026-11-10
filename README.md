@@ -50,3 +50,7 @@ Use **Enable sound** to start procedural wind, footsteps, occasional birds, supp
 Start with two climbing ropes, one water flask, and one trail mix. The backpack holds eight supply units; compass and binoculars do not take slots. Walking and resting recover stamina, while sprinting drains it. Water restores 50 stamina; trail mix restores 25 and boosts sprint speed for 12 seconds. Binoculars switch to a zoomed scouting view. Rope is automatically consumed on successful bridge and climbing objectives; it cannot be dropped. The starting ropes are enough to finish the expedition.
 
 Supply crates on the trail contain water or trail mix, award 5 XP each, and can only be collected once. A full pack leaves the crate on the trail until space is available. Use or drop consumables to free slots. Inventory and stamina belong to the current expedition and reset if you leave or reload, like the other unfinished expedition state.
+
+## Visual design
+
+The app uses a dark expedition palette, warm amber actions, locally bundled Fredoka headings, and Nunito Sans body text. Typography is enlarged across the dashboard, upload dialog, game HUD, challenges, and backpack, with responsive layouts and visible keyboard focus states. Font assets are included in production builds and do not require Google Fonts access.

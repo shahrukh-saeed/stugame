@@ -1,6 +1,6 @@
 import { icon } from "../lib/html.js";
 export function layout({ page, courses, content, overlay }) {
-  return `<aside><a class="brand" href="#">${icon("layers")}<span>stu<span class="brand-light">game</span><small>MAKE KNOWLEDGE STICK.</small></span></a><div class="nav-label">WORKSPACE</div><nav>${[
+  return `<aside><a class="brand" href="#">${icon("compass")}<span>stu<span class="brand-light">game</span><small>LEARN. EXPLORE. CONQUER.</small></span></a><div class="nav-label">BASE CAMP</div><nav>${[
     ["dashboard", "layout-dashboard", "Overview"],
     ["library", "book-open", "My library"],
     ["progress", "chart-no-axes-combined", "My progress"],
