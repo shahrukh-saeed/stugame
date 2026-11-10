@@ -21,11 +21,6 @@
   margin: 7px 0 0;
   letter-spacing: -0.5px;
 }
-.crystal-count {
-  font-size: 15px;
-  color: #edd59b;
-  text-align: right;
-}
 .world-viewport {
   position: relative;
   height: 540px;
@@ -75,20 +70,6 @@
 .quest-tracker small {
   font-size: 13px;
   color: #d2dfc5;
-}
-.companion-caption {
-  position: absolute;
-  bottom: 17px;
-  left: 22px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 14px;
-  color: #fff9e4;
-  text-shadow: 0 2px 5px #193b38;
-}
-.companion-caption svg {
-  width: 13px;
 }
 .world-controls {
   display: flex;
@@ -175,11 +156,6 @@
   .adventure-hud h2 {
     font-size: 18px;
   }
-  .crystal-count {
-    font-size: 13px;
-    max-width: 110px;
-    line-height: 1.7;
-  }
   .world-viewport {
     height: 420px;
   }
@@ -204,10 +180,6 @@
   .world-controls small {
     font-size: 13px;
     line-height: 1.8;
-  }
-  .companion-caption {
-    font-size: 12px;
-    left: 13px;
   }
   .game-top > span {
     max-width: 160px;
@@ -367,56 +339,20 @@
     padding: 9px;
   }
 }
-.field-vitals {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  width: 190px;
-  padding: 13px 15px;
-  border-radius: 9px;
-  background: #193b32ee;
-  color: #e1dec7;
-  pointer-events: none;
-}
-.field-vitals > span {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  letter-spacing: 1px;
-}
-.field-vitals small {
-  display: block;
-  margin-top: 8px;
-  font-size: 12px;
-  color: #d3debd;
-}
-.stamina-track {
-  height: 5px;
-  background: #3c4936;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-top: 10px;
-}
-.stamina-track > span {
-  height: 100%;
-  display: block;
-  background: #b6c282;
-  transition: width 0.15s linear;
-}
-.expedition-tools #backpack {
+.expedition-tools #inventory {
   display: flex;
   align-items: center;
   gap: 7px;
 }
-.expedition-tools #backpack svg {
+.expedition-tools #inventory svg {
   width: 15px;
   height: 15px;
 }
-.expedition-tools #backpack span {
+.expedition-tools #inventory span {
   font-size: 13px;
   opacity: 0.7;
 }
-.backpack-panel {
+.inventory-panel {
   position: relative;
   width: 490px;
   max-height: 94dvh;
@@ -429,7 +365,7 @@
   padding: 30px;
   color: #f8edce;
 }
-.backpack-panel h2 {
+.inventory-panel h2 {
   font-size: 29px;
   letter-spacing: -0.8px;
   margin: 12px 0 8px;
@@ -438,25 +374,11 @@
   font-size: 16px;
   color: #c0d0b5;
 }
-.pack-summary {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 24px;
-  font-size: 15px;
-}
-.pack-summary > span {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.pack-summary svg {
-  width: 15px;
-}
-.backpack-panel h3 {
+.inventory-panel h3 {
   font-size: 16px;
   margin: 24px 0 14px;
 }
-.backpack-panel h3 small {
+.inventory-panel h3 small {
   font-weight: 400;
   font-size: 13px;
   color: #c4d0ad;
@@ -506,46 +428,13 @@
   color: #c4d0ad;
   margin-top: 9px;
 }
-.pack-item-actions {
-  display: flex;
-  gap: 9px;
-  margin-top: 11px;
-}
-.pack-item button,
-.pack-equipment button {
+.pack-item button {
   font-size: 14px;
   border: 1px solid #829461;
   background: #4b6039;
   color: #fff0cf;
   padding: 7px 10px;
   border-radius: 5px;
-}
-.pack-item-actions button:last-child {
-  background: none;
-  color: #e5d3a3;
-  border-color: #7d8b5b;
-}
-.pack-equipment {
-  display: grid;
-  gap: 15px;
-}
-.pack-equipment article {
-  display: flex;
-  gap: 13px;
-}
-.pack-equipment article > svg {
-  color: #ffcf83;
-  width: 21px;
-  margin-top: 2px;
-}
-.pack-equipment b {
-  font-size: 15px;
-}
-.pack-equipment p {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #d1dec3;
-  margin: 5px 0 8px;
 }
 .pack-message {
   font-size: 14px;
@@ -555,23 +444,7 @@
   color: #f0dfaf;
   line-height: 1.7;
 }
-.game-immersive .field-vitals {
-  right: 22px;
-  bottom: 20px;
-}
 @media (max-width: 760px) {
-  .field-vitals {
-    right: 12px;
-    bottom: 12px;
-    width: 145px;
-    padding: 11px;
-  }
-  .field-vitals small {
-    font-size: 12px;
-  }
-  .companion-caption {
-    display: none;
-  }
   .expedition-tools {
     gap: 5px;
   }
@@ -579,25 +452,21 @@
     font-size: 12px;
     letter-spacing: 1px;
   }
-  .expedition-tools #backpack span {
+  .expedition-tools #inventory span {
     display: none;
   }
   .expedition-tools button {
     padding: 8px;
     font-size: 13px;
   }
-  .expedition-tools #backpack svg {
+  .expedition-tools #inventory svg {
     width: 13px;
   }
-  .backpack-panel {
+  .inventory-panel {
     padding: 24px 19px;
   }
-  .backpack-panel h2 {
+  .inventory-panel h2 {
     font-size: 27px;
-  }
-  .game-immersive .field-vitals {
-    right: 12px;
-    bottom: 12px;
   }
 }
 
@@ -638,16 +507,6 @@
   font-size: 14px;
   line-height: 1.6;
 }
-.field-vitals {
-  width: 235px;
-}
-.field-vitals > span {
-  font-size: 13px;
-}
-.field-vitals small {
-  font-size: 12px;
-  line-height: 1.5;
-}
 .spell-panel {
   width: 600px;
   background: var(--panel);
@@ -669,17 +528,13 @@
 .spell-panel .feedback h3 {
   font-size: 23px;
 }
-.backpack-panel {
+.inventory-panel {
   width: 550px;
-}
-.pack-summary {
-  font-size: 16px;
 }
 .pack-item h4 {
   font-size: 18px;
 }
-.pack-item p,
-.pack-equipment p {
+.pack-item p {
   font-size: 16px;
 }
 .pack-item h4 b {
@@ -692,29 +547,16 @@
 .pack-message {
   font-size: 16px;
 }
-.backpack-panel h3 {
+.inventory-panel h3 {
   font-size: 20px;
 }
-.backpack-panel h3 small {
+.inventory-panel h3 small {
   font-size: 13px;
 }
-.pack-equipment b {
-  font-size: 17px;
-}
-.pack-item button,
-.pack-equipment button {
+.pack-item button {
   font-size: 15px;
   min-height: 40px;
   padding: 8px 12px;
-}
-.pack-item-actions {
-  flex-wrap: wrap;
-}
-.pack-item-actions button:last-child {
-  color: #ead4a5;
-}
-.pack-equipment article {
-  gap: 16px;
 }
 .game-immersive .world-controls p {
   font-size: 16px;
@@ -737,10 +579,10 @@
     justify-content: center;
     white-space: nowrap;
   }
-  .expedition-tools #backpack {
+  .expedition-tools #inventory {
     font-size: 14px;
   }
-  .expedition-tools #backpack svg {
+  .expedition-tools #inventory svg {
     width: 16px;
   }
   .adventure-hud {
@@ -749,11 +591,6 @@
   }
   .adventure-hud h2 {
     font-size: 22px;
-  }
-  .crystal-count {
-    font-size: 13px;
-    max-width: 140px;
-    line-height: 1.7;
   }
   .quest-tracker {
     max-width: 88%;
@@ -767,10 +604,6 @@
   }
   .quest-tracker small {
     font-size: 14px;
-  }
-  .field-vitals {
-    width: 190px;
-    bottom: 15px;
   }
   .world-viewport {
     height: 470px;
@@ -803,14 +636,11 @@
   .spell-panel .feedback h3 {
     font-size: 22px;
   }
-  .backpack-panel {
+  .inventory-panel {
     padding: 28px 20px;
   }
-  .backpack-panel h2 {
+  .inventory-panel h2 {
     font-size: 28px;
-  }
-  .pack-summary {
-    font-size: 16px;
   }
   .pack-item {
     padding: 16px 13px;
@@ -825,18 +655,15 @@
   .pack-item p {
     font-size: 16px;
   }
-  .backpack-panel h3 {
+  .inventory-panel h3 {
     font-size: 21px;
   }
-  .backpack-panel h3 small {
+  .inventory-panel h3 small {
     display: block;
     margin: 7px 0 0;
   }
   .game-immersive .quest-tracker {
     padding: 11px;
-  }
-  .game-immersive .field-vitals {
-    bottom: 13px;
   }
 }
 .game-settings {
@@ -911,16 +738,6 @@
 .world-controls p {
   font-size: 16px;
 }
-.field-vitals > span {
-  font-size: 12px;
-}
-.field-vitals small {
-  font-size: 11px;
-}
-.field-vitals {
-  width: 215px;
-  padding: 12px;
-}
 .game-top > span {
   font-size: 13px;
 }
@@ -954,13 +771,128 @@
   .game-immersive .world-controls p {
     font-size: 15px;
   }
-  .field-vitals {
-    width: 180px;
-  }
   .settings-menu {
     min-width: 170px;
   }
   .world-controls .control-help p {
     font-size: 13px;
+  }
+}
+
+.crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff9de;
+  font-size: 24px;
+  pointer-events: none;
+  text-shadow: 0 1px 4px #000;
+}
+.first-person-tip {
+  position: absolute;
+  bottom: 15px;
+  left: 18px;
+  font-size: 12px;
+  color: #fff3ca;
+  text-shadow: 0 1px 4px #000;
+  pointer-events: none;
+}
+.course-stage {
+  font-size: 13px;
+  color: #d9c894;
+}
+.touch-jump {
+  display: none;
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  border: 1px solid #e8c37a;
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+  background: #274b3edc;
+  color: #ffe0a0;
+  font-size: 15px;
+  touch-action: none;
+}
+.question-powerups {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #557560;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 14px;
+}
+.question-powerups button {
+  background: #445f3f;
+  border: 1px solid #829366;
+  color: #ffe5a5;
+  border-radius: 7px;
+  padding: 9px 12px;
+  font-size: 14px;
+}
+.question-powerups small {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: #c2d3b6;
+  line-height: 1.6;
+}
+.hint-reveal {
+  padding: 14px;
+  border: 1px solid #a99257;
+  border-radius: 8px;
+  background: #3e5033;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #ffe7b1;
+}
+.eliminated-choice {
+  padding: 15px;
+  color: #9cb39a;
+  border: 1px dashed #5f775f;
+  border-radius: 8px;
+  font-size: 15px;
+  text-decoration: line-through;
+}
+.inventory-panel .pack-items {
+  margin-top: 23px;
+}
+.adventure-hud h2 {
+  font-size: 23px;
+}
+.world-viewport {
+  height: 560px;
+}
+.game-immersive .world-viewport {
+  height: auto;
+}
+@media (pointer: coarse) {
+  .touch-jump {
+    display: block;
+  }
+  .first-person-tip {
+    max-width: 65%;
+    font-size: 11px;
+  }
+}
+@media (max-width: 760px) {
+  .world-viewport {
+    height: 460px;
+  }
+  .adventure-hud h2 {
+    font-size: 21px;
+  }
+  .course-stage {
+    font-size: 12px;
+  }
+  .quest-tracker {
+    max-width: 90%;
+  }
+  .first-person-tip {
+    max-width: 65%;
+    font-size: 11px;
   }
 }

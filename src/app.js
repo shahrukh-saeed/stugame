@@ -1,4 +1,4 @@
-import { useItem, dropItem, notify } from "./game/inventory.js";
+import { useHint } from "./game/inventory.js";
 import { bindPresentation } from "./game/presentation.js";
 import { expeditionAudio } from "./game/audio.js";
 import { checkMaterial } from "./lib/upload-errors.js";
@@ -16,7 +16,7 @@ import { $ } from "./lib/html.js";
 // Application state and event orchestration. Views and game logic live in their own modules.
 export function mountApp() {
   let draft = { title: "", notes: "", file: null };
-  let backpackOpen = false;
+  let inventoryOpen = false;
   let mountWorld;
   let courses = loadCourses();
   let page = "dashboard",
@@ -57,7 +57,7 @@ export function mountApp() {
             index,
             world,
             challengeOpen,
-            backpackOpen,
+            inventoryOpen,
             selected,
             answerCorrect,
             levels,
@@ -147,65 +147,35 @@ export function mountApp() {
         render();
         $("#world")?.focus();
       };
-    if ($("#backpack"))
-      $("#backpack").onclick = () => {
-        backpackOpen = !backpackOpen;
-        world.target = null;
+    if ($("#inventory"))
+      $("#inventory").onclick = () => {
+        inventoryOpen = !inventoryOpen;
         render();
-        $("#close-backpack")?.focus();
+        $("#close-inventory")?.focus();
       };
-    const panel = $(".backpack-panel");
+    if ($("#close-inventory"))
+      $("#close-inventory").onclick = () => {
+        inventoryOpen = false;
+        render();
+        $("#world")?.focus();
+      };
+    document.querySelectorAll("[data-hint]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          if (selected === null && useHint(world, index, b.dataset.hint)) {
+            expeditionAudio.cue("pickup");
+            render();
+            $("#recall-input")?.focus();
+          }
+        }),
+    );
+    const panel = $(".inventory-panel");
     if (panel)
       panel.onkeydown = (e) => {
         if (e.key === "Tab") {
-          const focusable = [
-              ...panel.querySelectorAll("button:not(:disabled)"),
-            ],
-            first = focusable[0],
-            last = focusable.at(-1);
-          if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
+          e.preventDefault();
+          $("#close-inventory").focus();
         }
-      };
-    if ($("#close-backpack"))
-      $("#close-backpack").onclick = () => {
-        backpackOpen = false;
-        render();
-        $("#world")?.focus();
-      };
-    document.querySelectorAll("[data-use]").forEach(
-      (b) =>
-        (b.onclick = () => {
-          if (useItem(world, b.dataset.use)) expeditionAudio.cue("pickup");
-          render();
-          $("#close-backpack")?.focus();
-        }),
-    );
-    document.querySelectorAll("[data-drop]").forEach(
-      (b) =>
-        (b.onclick = () => {
-          dropItem(world, b.dataset.drop);
-          render();
-          $("#close-backpack")?.focus();
-        }),
-    );
-    if ($("#scout-route"))
-      $("#scout-route").onclick = () => {
-        world.scouting = !world.scouting;
-        backpackOpen = false;
-        notify(
-          world,
-          world.scouting
-            ? "Binoculars up. Survey the route ahead."
-            : "Binoculars packed.",
-        );
-        render();
-        $("#world")?.focus();
       };
     if ($("#world"))
       worldCleanup = mountWorld(
@@ -215,7 +185,6 @@ export function mountApp() {
           index = i;
           selected = null;
           challengeOpen = true;
-          world.target = null;
           render();
           ($("#recall-input") || $(".challenge button"))?.focus();
         },
@@ -229,7 +198,7 @@ export function mountApp() {
           save();
           render();
         },
-        challengeOpen || backpackOpen,
+        challengeOpen || inventoryOpen,
       );
     if ($("#again")) $("#again").onclick = () => start(active.id);
     if ($("#exit"))
@@ -316,7 +285,7 @@ export function mountApp() {
       correct = 0;
       finished = false;
       world = createQuest();
-      backpackOpen = false;
+      inventoryOpen = false;
       challengeOpen = false;
     } catch (e) {
       error = e.message;
@@ -344,12 +313,11 @@ export function mountApp() {
       e.repeat
     )
       return;
-    if (e.key.toLowerCase() === "b" || (e.key === "Escape" && backpackOpen)) {
+    if (e.key.toLowerCase() === "i" || (e.key === "Escape" && inventoryOpen)) {
       e.preventDefault();
-      backpackOpen = !backpackOpen;
-      world.target = null;
+      inventoryOpen = !inventoryOpen;
       render();
-      (backpackOpen ? $("#close-backpack") : $("#world"))?.focus();
+      (inventoryOpen ? $("#close-inventory") : $("#world"))?.focus();
     }
   });
   render();
